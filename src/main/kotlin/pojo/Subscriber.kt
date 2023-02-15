@@ -1,7 +1,8 @@
 package top.yuanning.rss_subscribe.pojo
 
 import kotlinx.serialization.Serializable
-import kotlin.properties.Delegates
+import top.yuanning.rss_subscribe.util.DateSerializer
+import java.util.*
 
 @Serializable
 class Subscriber {
@@ -10,7 +11,9 @@ class Subscriber {
      */
     var type : String = ""
     var id : Long = 0
-    var notifiedNumber: Int = 0
+
+    @Serializable(with = DateSerializer::class)
+    var notifideDate : Date = Date(0)
 
     constructor()
     constructor(type: String?, id: Long?) {
@@ -19,7 +22,7 @@ class Subscriber {
     }
 
     override fun toString(): String {
-        return "Subscriber(type='$type', id=$id, notified=$notifiedNumber)"
+        return "Subscriber(type='$type', id=$id, notifideDate=$notifideDate)"
     }
 
 

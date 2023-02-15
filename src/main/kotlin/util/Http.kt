@@ -8,6 +8,9 @@ import kotlin.coroutines.suspendCoroutine
 
 object Http {
 
+    /**
+     * 从url中，以字符串的方式下载url
+     */
     suspend fun getXmlFromUrl(url:String) : String = suspendCoroutine {
         val request = Request.Builder().url(url).build()
         OkHttpClient().newCall(request).enqueue(object :Callback{

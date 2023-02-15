@@ -6,8 +6,8 @@ plugins {
     id("net.mamoe.mirai-console") version "2.14.0"
 }
 
-group = "org.example"
-version = "0.1.0"
+group = "top.yuanning"
+version = "0.2.0"
 
 dependencies {
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
@@ -16,6 +16,9 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.3")
     // https://mvnrepository.com/artifact/org.dom4j/dom4j
     implementation("org.dom4j:dom4j:2.1.4")
+
+    testImplementation(kotlin("test", "1.7.0"))
+
 }
 
 repositories {

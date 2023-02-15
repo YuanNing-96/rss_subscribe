@@ -23,7 +23,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "top.yuanning.rss_subscribe",
         name = "rss订阅更新插件",
-        version = "0.1.0"
+        version = "0.2.0"
     ) {
         author("作者：源宁，联系方式：sxyn_749@163.com")
         info(

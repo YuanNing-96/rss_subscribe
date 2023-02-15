@@ -2,9 +2,7 @@ package top.yuanning.rss_subscribe.task
 
 
 import kotlinx.coroutines.delay
-import net.mamoe.mirai.Bot
 import net.mamoe.mirai.contact.Contact
-import net.mamoe.mirai.utils.info
 import org.dom4j.Document
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element
@@ -14,6 +12,7 @@ import top.yuanning.rss_subscribe.pojo.Subscribe
 import top.yuanning.rss_subscribe.util.ContactUtil
 import top.yuanning.rss_subscribe.util.EasyElement
 import top.yuanning.rss_subscribe.util.Http
+import top.yuanning.rss_subscribe.util.RssUpdateCheck
 import java.lang.Exception
 
 
@@ -42,47 +41,60 @@ class XmlCheckTask {
                 return@forEach
             }
 
+//            xml = testXml// TODO 测试用
+
             val document : Document = DocumentHelper.parseText(xml)
             val root : Element = document.rootElement
-            val nodes = EasyElement(root).getChileElements(listOf("channel","item"))
-            if(!subscribe.init){//如果该订阅没有被初始化，则初始化该订阅，初始化过程为将所有记录的已通知个数更改为当前url已有个数
-                subscribe.init = true
-                subscribe.elementNumber = nodes.size
+            val items = EasyElement(root).getChileElements(listOf("channel","item"))
+            val latestItem = items[0]
+            if(!subscribe.initialized){//如果该订阅没有被初始化，则初始化该订阅，初始化过程为将所有记录的已通知个数更改为当前url已有个数
+                subscribe.initialize(EasyElement(latestItem).getItemPubDate())
+                return@forEach
+            }
+
+            if(RssUpdateCheck.checkSubscribeUpdate(latestItem,subscribe)){
+                var date = EasyElement(latestItem).getItemPubDate()
+
                 subscribe.subscribers.forEach {
-                    it.notifiedNumber = nodes.size
-                }
+                    subscriber ->
 
-            }else{
-                if (nodes.size > subscribe.elementNumber){
+                    if(RssUpdateCheck.checkSubscriberUpdate(latestItem,subscriber)){//通过判断是否需要通知最新节点，判断该Subscriber是否需要通知
 
-                    subscribe.subscribers.forEach{
-                        subscriber ->
-                            try {
-                                val contact : Contact = ContactUtil.getContactOrThrow(subscriber.type,subscriber.id)
-                                for (index in subscribe.elementNumber until nodes.size){
-                                    val node = nodes[nodes.size - 1 - index]
-                                    val message = "订阅内容更新了\n"+"更新内容："+node.element("title").text+"\n链接地址："+node.element("link").text
-                                    contact.sendMessage(message)
-//                                    logger.info { message }//TODO 测试功能用
-                                    delay(RssConfig.sendMessageTime)//发送消息的最短间隔设置为5秒，防止发送消息太频繁导致被封
-                                }
-                                subscriber.notifiedNumber  = nodes.size
-                            }catch (e:Exception){
-                                logger.error(e.toString())
-                                return@forEach
+                        val contact : Contact
+
+                        try {
+                            contact = ContactUtil.getContactOrThrow(subscriber.type,subscriber.id)
+                        }catch (e:Exception){ //如果没有能联系上该subscriber的bot，则跳过当前的subscriber
+                            return@forEach
+                        }//TODO 测试时注释掉contact，因为不一定有bot
+
+                        var startIndex = if (items.size-RssConfig.maxNotifyNum>=0) items.size-RssConfig.maxNotifyNum else 0
+                        items.asReversed().subList(startIndex ,items.size).forEach { //此处进行翻转，从旧到新开始推送，因为items是从新到旧排列的，items[0]是最新的
+                            item ->
+
+                            if(RssUpdateCheck.checkSubscriberUpdate(item, subscriber)){//由旧到新，对于每一个item，判断是否需要通知
+                                ContactUtil.sendMessageOfItemToContact(item,contact)
+//                                ContactUtil.sendMessageOfItemToSubscriber(item,subscriber)
+//                                try {
+//                                    ContactUtil.sendMessageOfItemToSubscriber(item,subscriber)
+//                                }catch (e:Exception){
+//                                    return@forEach
+//                                } //TODO 测试用
+                                subscriber.notifideDate = EasyElement(item).getItemPubDate()
+                                delay(RssConfig.sendMessageTime)
                             }
-                    }
-
-                    var maxNotifiedNumber = 0
-                    subscribe.subscribers.forEach {
-                        if(it.notifiedNumber > maxNotifiedNumber){
-                            maxNotifiedNumber = it.notifiedNumber
                         }
                     }
-                    subscribe.elementNumber = maxNotifiedNumber
+
+                    if(date.compareTo(subscriber.notifideDate)>0){
+                        date = subscriber.notifideDate
+                    }
 
                 }
+
+                subscribe.minNotifideDate = date
             }
+
         }
     }
 
