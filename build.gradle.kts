@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "top.yuanning"
-version = "0.2.0"
+version = "0.2.1"
 
 dependencies {
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
@@ -16,6 +16,11 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.3")
     // https://mvnrepository.com/artifact/org.dom4j/dom4j
     implementation("org.dom4j:dom4j:2.1.4")
+
+    // https://mvnrepository.com/artifact/org.mybatis/mybatis
+    implementation("org.mybatis:mybatis:3.5.11")
+    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
+    implementation("com.mysql:mysql-connector-j:8.0.32")
 
     testImplementation(kotlin("test", "1.7.0"))
 
@@ -27,3 +32,4 @@ repositories {
     }
     mavenCentral()
 }
+
