@@ -6,5 +6,3 @@
 /out/
 /run/
 /debug-sandbox
-
-/src/main/resources/mybatis-config.xml

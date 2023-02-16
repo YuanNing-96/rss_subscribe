@@ -3,6 +3,7 @@ package top.yuanning.rss_subscribe.util
 import org.dom4j.Element
 import top.yuanning.rss_subscribe.pojo.Subscribe
 import top.yuanning.rss_subscribe.pojo.Subscriber
+import top.yuanning.rss_subscribe.rss.Item
 
 object RssUpdateCheck {
 
@@ -11,8 +12,8 @@ object RssUpdateCheck {
      * 需要更新则返回true，无需更新返回false
      * 如果subscribe的date比最新item的date还要新，则返回false
      */
-    fun checkSubscribeUpdate(item:Element,subscribe: Subscribe):Boolean{
-        val itemDate = EasyElement(item).getItemPubDate()
+    fun checkSubscribeUpdate(item: Item, subscribe: Subscribe):Boolean{
+        val itemDate = item.pubDate
         val subscribeDate = subscribe.minNotifideDate
         if(itemDate.compareTo(subscribeDate) == 0){
             return false
@@ -28,8 +29,8 @@ object RssUpdateCheck {
      * 需要更新则返回true，无需更新返回false
      * 如果subscribe的date比最新item的date还要新，则抛出异常
      */
-    fun checkSubscribeUpdateOrThrow(item:Element,subscribe: Subscribe):Boolean{
-        val itemDate = EasyElement(item).getItemPubDate()
+    fun checkSubscribeUpdateOrThrow(item:Item,subscribe: Subscribe):Boolean{
+        val itemDate = item.pubDate
         val subscribeDate = subscribe.minNotifideDate
         if(itemDate.compareTo(subscribeDate) == 0){
             return false
@@ -45,8 +46,8 @@ object RssUpdateCheck {
      * 需要更新则返回true，无需更新返回false
      * 如果subscriber的date比最新item的date还要新，则返回false
      */
-    fun checkSubscriberUpdate(item: Element,subscriber: Subscriber):Boolean{
-        val itemDate = EasyElement(item).getItemPubDate()
+    fun checkSubscriberUpdate(item: Item,subscriber: Subscriber):Boolean{
+        val itemDate = item.pubDate
         val subscriberDate = subscriber.notifideDate
         if(itemDate.compareTo(subscriberDate) == 0){
             return false
@@ -62,8 +63,8 @@ object RssUpdateCheck {
      * 需要更新则返回true，无需更新返回false
      * 如果subscriber的date比最新item的date还要新，则抛出异常
      */
-    fun checkSubscriberUpdateOrThrow(item: Element,subscriber: Subscriber):Boolean{
-        val itemDate = EasyElement(item).getItemPubDate()
+    fun checkSubscriberUpdateOrThrow(item: Item,subscriber: Subscriber):Boolean{
+        val itemDate = item.pubDate
         val subscriberDate = subscriber.notifideDate
         if(itemDate.compareTo(subscriberDate) == 0){
             return false

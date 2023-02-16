@@ -1,16 +1,11 @@
-package org.example.mirai.plugin
+package top.yuanning.rss_subscribe.kotlinApi
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 import top.yuanning.rss_subscribe.util.DataParse
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
-import kotlin.coroutines.EmptyCoroutineContext
 
 class TimeParseTest {
 
@@ -32,7 +27,7 @@ class TimeParseTest {
     }
 
     @Test
-    fun timeStampToDate(){
+    fun timeStampToDateTest(){
         val date1 = Date(1674357900000)
         val sdfTemp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         var date2 = sdfTemp.parse("2023-01-22 11:25:00")

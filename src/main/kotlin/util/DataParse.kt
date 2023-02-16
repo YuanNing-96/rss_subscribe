@@ -1,6 +1,7 @@
 package top.yuanning.rss_subscribe.util
 
 import org.dom4j.Element
+import top.yuanning.rss_subscribe.rss.Item
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -20,6 +21,18 @@ object DataParse {
         sdfTemp.timeZone = aZone
         return sdfTemp.parse(dateStr)
     }
+
+//    fun pubDateParseToDate(dateStr:String?):Date?{
+//        if(dateStr == null){
+//            return null
+//        }else{
+////            return pubDateParseToDate(dateStr)
+//            val sdfTemp = SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z", Locale.US);
+//            val aZone = SimpleTimeZone(8,"GMT");
+//            sdfTemp.timeZone = aZone
+//            return sdfTemp.parse(dateStr)
+//        }
+//    } TODO 往后版本中，pubDate可为空时，使用这行代码
 
     fun dateToString(date:Date):String{
         var dateFormatStr = "yyyy年MM月dd日-HH时mm分ss秒"
@@ -41,15 +54,22 @@ object DataParse {
         return sdfTemp.parse(dateStr).time
     }
 
-    fun messageTemplateParse(messageTemplate:String,item:Element):String{
-        var easyItem = EasyElement(item)
+    /**
+     * TODO 目前内容的映射只做了item的title，link，description，pubDate四个子属性
+     */
+    fun messageTemplateParse(messageTemplate:String,item:Item):String{
+
+        val avaliableChildNames = item.getAvailableChildNames()
+
         val message = messageTemplate
-            .replace("${'$'}{title}",easyItem.getItemTitle())
-            .replace("${'$'}{link}",easyItem.getItemLink())
-            .replace("${'$'}{description}",easyItem.getItemDescription())
-            .replace("${'$'}{pubDate}", dateToString(easyItem.getItemPubDate()))
-            .replace("${'$'}{category}",easyItem.getItemCategory())
+            .replace("${'$'}{title}",item.title)
+            .replace("${'$'}{link}",item.link)
+            .replace("${'$'}{description}",item.description)
+            .replace("${'$'}{pubDate}", this.dateToString(item.pubDate))
 
         return message
     }
+
+
 }
+

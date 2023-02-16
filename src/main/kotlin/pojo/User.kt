@@ -2,6 +2,9 @@ package top.yuanning.rss_subscribe.pojo
 
 import java.io.Serializable
 
+/**
+ * 此接口类作为样例，如果以后需要用到mybatis，就照着这个格式写接口
+ */
 class User : Serializable {
     var id:Int = 0
     var name:String = ""
@@ -12,10 +15,5 @@ class User : Serializable {
         this.id = id
         this.name = name
     }
-
-    override fun toString(): String {
-        return "User(id=$id, name='$name')"
-    }
-
 
 }

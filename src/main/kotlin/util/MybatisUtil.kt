@@ -1,40 +1,50 @@
 package top.yuanning.rss_subscribe.util
 
-import net.mamoe.mirai.utils.error
+import org.apache.ibatis.builder.xml.XMLConfigBuilder
+import org.apache.ibatis.datasource.pooled.PooledDataSource
+import org.apache.ibatis.io.Resources
+import org.apache.ibatis.mapping.Environment
 import org.apache.ibatis.session.SqlSession
 import org.apache.ibatis.session.SqlSessionFactory
 import org.apache.ibatis.session.SqlSessionFactoryBuilder
-import top.yuanning.rss_subscribe.PluginMain
-import top.yuanning.rss_subscribe.PluginMain.logger
+import org.apache.ibatis.transaction.TransactionFactory
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory
+import top.yuanning.rss_subscribe.configs.RssConfig
 import java.io.InputStream
+
 
 object MybatisUtil {
 
-    private var sqlSessionFactory : SqlSessionFactory
+    private lateinit var sqlSessionFactory : SqlSessionFactory
+
+    fun getEnvironmentOfConfiguration() : Environment{
+        val dataSource = PooledDataSource()
+        dataSource.username = RssConfig.mysqlConfig.userName
+        dataSource.password = RssConfig.mysqlConfig.password
+        dataSource.url = RssConfig.mysqlConfig.url
+        dataSource.driver = RssConfig.mysqlConfig.driver
+        dataSource.poolMaximumActiveConnections = 100
+        dataSource.poolMaximumIdleConnections = 8
+        val transactionFactory: TransactionFactory = JdbcTransactionFactory()
+        val environment = Environment("development", transactionFactory, dataSource)
+        return environment
+    }//得到具有正确的数据库链接配置的environment实例
 
     init {
-        val thread = Thread.currentThread()
-        val oc = thread.contextClassLoader
-        try {
-            thread.contextClassLoader = PluginMain::class.java.classLoader
+        ChangeClassLoaderUtil.changeClassLoader {
 
             val resource = "mybatis-config.xml"
-            val inputStream: InputStream = PluginMain::class.java.classLoader
-                .getResourceAsStream(resource)!!//TODO 此处强制转为非空，因为mybatis-config.xml文件是存在的，以及类加载器是正常的
-            sqlSessionFactory = SqlSessionFactoryBuilder().build(inputStream)
+            val inputStream: InputStream = Resources.getResourceAsStream(resource)!!//TODO 此处强制转为非空，因为mybatis-config.xml文件是存在的，以及类加载器是正常的
 
-        } finally {
-            thread.contextClassLoader = oc
+            val configuration = XMLConfigBuilder(inputStream).parse()
+            configuration.environment = getEnvironmentOfConfiguration()
+
+            sqlSessionFactory = SqlSessionFactoryBuilder().build(configuration)
         }
     }
 
     fun getSqlSession():SqlSession{
-        return PluginMain.getSqlSession()
+        return sqlSessionFactory.openSession()
     }
-
-    fun getSqlSessionFactory():SqlSessionFactory{
-        return sqlSessionFactory
-    }
-
 
 }

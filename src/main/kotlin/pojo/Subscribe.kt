@@ -34,11 +34,4 @@ class Subscribe{
         this.minNotifideDate = date
         this.initialized = true
     }
-
-    fun initialize(timeStamp: Long){
-        val date = Date(timeStamp)
-        initialize(date)
-    }
-
-
 }

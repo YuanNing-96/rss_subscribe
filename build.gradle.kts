@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "top.yuanning"
-version = "0.2.1"
+version = "0.3.0"
 
 dependencies {
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
@@ -22,7 +22,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
     implementation("com.mysql:mysql-connector-j:8.0.32")
 
-    testImplementation(kotlin("test", "1.7.0"))
+    implementation(kotlin("reflect","1.8.0"))
+    testImplementation(kotlin("test", "1.8.0"))
 
 }
 

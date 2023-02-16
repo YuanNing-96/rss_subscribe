@@ -2,16 +2,15 @@ package top.yuanning.rss_subscribe.util
 
 import okhttp3.*
 import okio.IOException
-import top.yuanning.rss_subscribe.PluginMain.logger
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 object Http {
 
     /**
-     * 从url中，以字符串的方式下载url
+     * 从url中，以字符串的方式下载url，返回String
      */
-    suspend fun getXmlFromUrl(url:String) : String = suspendCoroutine {
+    suspend fun getXmlStringFromUrl(url:String) : String = suspendCoroutine {
         val request = Request.Builder().url(url).build()
         OkHttpClient().newCall(request).enqueue(object :Callback{
             override fun onFailure(call: Call, e: IOException) {
@@ -23,4 +22,5 @@ object Http {
             }
         })
     }
+
 }

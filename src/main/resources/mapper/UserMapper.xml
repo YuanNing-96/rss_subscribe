@@ -3,7 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.yuanning.rss_subscribe.dao.UserMapper">
+    <!-- 此Mapper.xml作为样例，告诉自己如果以后要用mybatis，就抄这个就行 -->
+
     <select id="getUserList" resultType="top.yuanning.rss_subscribe.pojo.User">
         select * from test.table_test
     </select>
+
 </mapper>

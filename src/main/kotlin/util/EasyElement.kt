@@ -32,6 +32,23 @@ class EasyElement(element: Element) {
         return this.element.text
     }
 
+    @Deprecated("与java对接的接口，可能会有空指针异常", ReplaceWith("使用OrNull和OrThrow控制可空或抛出异常","getChildElementOrNull,getChildElementOrThrow"))
+    fun getChildElement(childName: String):Element{
+        return this.element.element(childName)
+    }
+
+    fun getChildElementOrNull(childName: String):Element?{
+        return this.element.element(childName)
+    }
+
+    fun getChildElementOrThrow(childName: String):Element{
+        return this.element.element(childName)?:throw Exception("element无该子节点")
+    }
+
+    fun getChildElements(childName: String):List<Element>{
+        return this.element.elements(childName)
+    }
+
     /**
      * 为了适配非miobt链接设计的通用得到子节点的函数
      */
@@ -63,99 +80,33 @@ class EasyElement(element: Element) {
         return this.getName().equals("item")
     }
 
-    /**
-     * 获取item节点的title
-     */
-    fun getItemTitle():String{
-        if (!this.isItemElement()){
-            throw Exception("非item节点，无法获取item节点的title")
-        }else{
-            val title = this.getChileElement(listOf("title")).text
-            return title
-        }
+    fun isChannelElement():Boolean{
+        return this.getName().equals("channel")
     }
 
     /**
-     * 获取item节点的link
+     * 得到下一级某个字节点的文本
      */
-    fun getItemLink():String{
-        if (!this.isItemElement()){
-            throw Exception("非item节点，无法获取item节点的link")
-        }else{
-            val link = this.getChileElement(listOf("link")).text
-            return link
+    fun getChiledTextOrNull(childName:String):String?{
+        try{
+            return this.getChildElementOrNull(childName)?.text
+        }catch (e:Exception){
+            return null
         }
     }
 
-    /**
-     * 获取item节点的description
-     */
-    fun getItemDescription():String{
-        if (!this.isItemElement()){
-            throw Exception("非item节点，无法获取item节点的description")
-        }else{
-            val description = this.getChileElement(listOf("description")).text
-            return description
+    fun getChiledTextOrThrow(childName:String):String{
+        try{
+            return this.getChildElementOrThrow(childName).text
+        }catch (e:Exception){
+            throw Exception("无该子节点")
         }
     }
 
-    /**
-     * 获取item节点的guid
-     */
-    fun getItemGuid():String{
-        if (!this.isItemElement()){
-            throw Exception("非item节点，无法获取item节点的guid")
-        }else{
-            val guid = this.getChileElement(listOf("guid")).text
-            return guid
-        }
-    }
-
-    /**
-     * 获取item节点的author
-     */
-    fun getItemAuthor():String{
-        if (!this.isItemElement()){
-            throw Exception("非item节点，无法获取item节点的author")
-        }else{
-            val author = this.getChileElement(listOf("author")).text
-            return author
-        }
-    }
-
-    /**
-     * 获取item节点的enclosure
-     */
-    fun getItemEnclosure():String{
-        if (!this.isItemElement()){
-            throw Exception("非item节点，无法获取item节点的enclosure")
-        }else{
-            val enclosure = this.getChileElement(listOf("enclosure")).text
-            return enclosure
-        }
-    }
-
-    /**
-     * 获取该节点的pubDate，如果不是item节点，则没有pubDate属性，会抛出异常
-     */
-    fun getItemPubDate(): Date {
-        if (!this.isItemElement()){
-            throw Exception("非item节点，无法获取pubDate")
-        }else{
-            val date = DataParse.pubDateParseToDate(this.getChileElement(listOf("pubDate")).text)
-            return date
-        }
-    }
-
-    /**
-     * 获取item节点的category
-     */
-    fun getItemCategory():String{
-        if (!this.isItemElement()){
-            throw Exception("非item节点，无法获取item节点的category")
-        }else{
-            val category = this.getChileElement(listOf("category")).text
-            return category
-        }
+    fun getAvailableChildNames():List<String>{
+        return this.element.elements().toSet().filterNotNull().map {
+            element ->
+            element.name
+        }.toList()
     }
 }
